@@ -6,7 +6,7 @@ MZ = 16
 ZMAX = 1
 
 MXG = 2
-MYG = 0
+MYG = 1
 
 [mesh]
 
@@ -32,7 +32,7 @@ RTOL = 1.0e-15   # relative tolerance
 mxstep = 10000  # Maximum internal steps per output
 
 mms = true  # -> Enable MMS testing
-mms_initialise = false  # Don't initialise with MMS solution
+mms_initialise = true  # Don't initialise with MMS solution
 
 [output]
 floats = false # -> Output in double precision
