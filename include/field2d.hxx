@@ -93,10 +93,10 @@ class Field2D : public Field, public FieldData {
   inline const BoutReal& operator[](const DataIterator &d) const {
     return operator()(d.x, d.y);
   }
-  inline BoutReal& operator[](Indices &i) {
+  inline BoutReal& operator[](const Indices &i) {
     return operator()(i.x, i.y);
   }
-  inline const BoutReal& operator[](Indices &i) const {
+  inline const BoutReal& operator[](const Indices &i) const {
     return operator()(i.x, i.y);
   }
   
@@ -134,6 +134,9 @@ class Field2D : public Field, public FieldData {
     return operator()(jx, jy);
   }
   
+  const Field2D& yup() const {return *this;}
+  const Field2D& ydown() const {return *this;}
+
   Field2D & operator+=(const Field2D &rhs);
   Field2D & operator+=(const BoutReal rhs);
   Field2D & operator-=(const Field2D &rhs);
