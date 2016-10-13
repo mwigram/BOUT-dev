@@ -40,16 +40,16 @@ struct DERIV_C4 {
  */
   
 const Field2D indexDDX_C2(const Field2D &f) { 
-  loopX1<DERIV_C2> op; return op(f); }
+  loopXS<DERIV_C2> op; return op(f); }
   
 const Field3D indexDDX_C2(const Field3D &f) { 
-  loopX1<DERIV_C2> op; return op(f); }
+  loopXS<DERIV_C2> op; return op(f); }
 
 const Field2D indexDDX_C4(const Field2D &f) { 
-  loopX1<DERIV_C4> op; return op(f); }
+  loopXS<DERIV_C4> op; return op(f); }
 
 const Field3D indexDDX_C4(const Field3D &f) { 
-  loopX1<DERIV_C4> op; return op(f); }
+  loopXS<DERIV_C4> op; return op(f); }
 
 /*!
  * Choose one of the indexDDX functions, based on options

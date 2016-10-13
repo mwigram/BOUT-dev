@@ -24,7 +24,7 @@ struct Stencil {
  * 
  */
 template<typename Op>
-struct loopX1 {
+struct loopXS {
   Op op;
   
   template<typename F>
@@ -35,6 +35,55 @@ struct loopX1 {
     for(auto i : result.region(RGN_NOBNDRY)) {
       
       result[i] = op({
+          f[i.offset(-2,0,0)],
+            f[i.xm()],
+            f[i],
+            f[i.xp()],
+            f[i.offset(2,0,0)]
+            });
+    }
+    return result;
+  }
+};
+
+/*!
+ * Template class FieldOpResult
+ *
+ * Calculates the return type of an operation involving Field2D and Field3D types
+ *
+ * FieldOpResult<Field2D, Field2D>::type   -> Field2D
+ * FieldOpResult<Field2D, Field3D>::type   -> Field3D
+ * 
+ */
+
+template<typename F1, typename F2>
+struct FieldOpResult {
+  typedef Field3D type;  // Default result is Field3D
+};
+
+/// If both inputs are Field2D, result is Field2D
+template<>
+struct FieldOpResult<Field2D,Field2D> {
+  typedef Field2D type;
+};
+
+/*!
+ * Template class to loop over the domain RGN_NOBNDRY
+ * and call a derivative operator in X
+ * 
+ */
+template<typename Op>
+struct loopXRS {
+  Op op;
+  
+  template<typename V, typename F>
+  const typename FieldOpResult<V, F>::type operator()(const V &v, const F &f) const {
+    typename FieldOpResult<V, F>::type result;
+    result.allocate();
+    
+    for(auto i : result.region(RGN_NOBNDRY)) {
+      
+      result[i] = op(v[i], {
           f[i.offset(-2,0,0)],
             f[i.xm()],
             f[i],
