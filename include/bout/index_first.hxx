@@ -6,6 +6,8 @@
 #include <field3d.hxx>
 #include <field2d.hxx>
 
+namespace DIFOPS {
+
 /*
  * These functions use method specified in options
  * so have a small overhead for the dispatch
@@ -37,3 +39,4 @@ const Field3D indexDDZ_C2(const Field3D &f);
 const Field2D indexDDZ_C4(const Field2D &f) { return 0.0; }
 const Field3D indexDDZ_C4(const Field3D &f);
 
+}; // namespace DIFOPS

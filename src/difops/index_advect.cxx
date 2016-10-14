@@ -1,6 +1,10 @@
 #include "stencil_loops.hxx"
 #include <utils.hxx>
 
+#include <bout/index_advect.hxx>
+
+namespace DIFOPS {
+
 /*
  * Define advection operators
  */
@@ -95,13 +99,13 @@ const Field3D indexVDDX_W3(const Field3D &v, const Field3D &f) { loopXRS<ADVECT_
  * Template parameter is the field type (Field2D, Field3D)
  */
 template<typename V, typename F>
-void defaultIndexVDDX(std::function<const F(const V &, const F &)> *func) {
+void defaultIndexVDDX(std::function<const typename FieldOpResult<V,F>::type (const V &, const F &)> *func) {
   // Define the type of the free function needed, for overload resolution
-  using func_t = const F(*)(const V &, const F &);
+  using func_t = const typename FieldOpResult<V,F>::type(*)(const V &, const F &);
 
   // Fetch the string specifying the method
   string setting;
-  Options::getRoot()->getSection("operators")->get("vddx", setting, "u1");
+  Options::getRoot()->getSection("mesh")->getSection("ddx")->get("upwind", setting, "u1");
   setting = lowercase(setting);
   
   if(setting == "u1") {
@@ -135,3 +139,29 @@ const Field2D indexVDDX(const Field2D &v, const Field2D &f) {
   }
   return func(v,f);
 }
+
+const Field3D indexVDDX(const Field3D &v, const Field2D &f) {
+  static std::function<const Field3D(const Field3D &, const Field2D &)> func = nullptr;
+  if(func == nullptr) {
+    defaultIndexVDDX(&func);
+  }
+  return func(v,f);
+}
+
+const Field3D indexVDDX(const Field2D &v, const Field3D &f) {
+  static std::function<const Field3D(const Field2D &, const Field3D &)> func = nullptr;
+  if(func == nullptr) {
+    defaultIndexVDDX(&func);
+  }
+  return func(v,f);
+}
+  
+const Field3D indexVDDX(const Field3D &v, const Field3D &f) {
+  static std::function<const Field3D(const Field3D &, const Field3D &)> func = nullptr;
+  if(func == nullptr) {
+    defaultIndexVDDX(&func);
+  }
+  return func(v,f);
+}
+  
+}; // DIFOPS namespace

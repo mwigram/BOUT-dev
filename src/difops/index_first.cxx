@@ -9,7 +9,9 @@
 
 #include "stencil_loops.hxx"
 
-#include "derivs_first.hxx"
+#include <bout/index_first.hxx>
+
+namespace DIFOPS {
 
 /*
  * Define first derivative operators
@@ -63,7 +65,7 @@ void defaultIndexDDX(std::function<const F(const F &)> *func) {
 
   // Fetch the string specifying the method
   string setting;
-  Options::getRoot()->getSection("operators")->get("ddx", setting, "c2");
+  Options::getRoot()->getSection("mesh")->getSection("ddx")->get("first", setting, "c2");
   setting = lowercase(setting);
   
   if(setting == "c2") {
@@ -84,10 +86,10 @@ void defaultIndexDDX(std::function<const F(const F &)> *func) {
  */
 
 const Field2D indexDDY_C2(const Field2D &f) { 
-  loopY1<DERIV_C2> op; return op(f); }
+  loopYS<DERIV_C2> op; return op(f); }
   
 const Field3D indexDDY_C2(const Field3D &f) { 
-  loopY1<DERIV_C2> op; return op(f); }
+  loopYS<DERIV_C2> op; return op(f); }
 
 /*!
  * Choose one of the indexDDY functions, based on options
@@ -100,7 +102,7 @@ void defaultIndexDDY(std::function<const F(const F &)> *func) {
   
   // Fetch the string specifying the method
   string setting;
-  Options::getRoot()->getSection("operators")->get("ddy", setting, "c2");
+  Options::getRoot()->getSection("mesh")->getSection("ddy")->get("first", setting, "c2");
   setting = lowercase(setting);
   
   if(setting == "c2") {
@@ -119,10 +121,10 @@ void defaultIndexDDY(std::function<const F(const F &)> *func) {
  */
   
 const Field3D indexDDZ_C2(const Field3D &f) { 
-  loopZ1<DERIV_C2> op; return op(f); }
+  loopZS<DERIV_C2> op; return op(f); }
 
 const Field3D indexDDZ_C4(const Field3D &f) { 
-  loopZ1<DERIV_C4> op; return op(f); }
+  loopZS<DERIV_C4> op; return op(f); }
 
 /*!
  * Choose one of the indexDDZ functions, based on options
@@ -136,7 +138,7 @@ void defaultIndexDDZ(std::function<const F(const F &)> *func) {
 
   // Fetch the string specifying the method
   string setting;
-  Options::getRoot()->getSection("operators")->get("ddz", setting, "c2");
+  Options::getRoot()->getSection("mesh")->getSection("ddz")->get("first", setting, "c2");
   setting = lowercase(setting);
   
   if(setting == "c2") {
@@ -205,3 +207,5 @@ F_INDEX_FIRSTDERIV(indexDDY, defaultIndexDDY, Field2D); // const Field2D indexDD
 
 F_INDEX_FIRSTDERIV(indexDDZ, defaultIndexDDZ, Field3D); // const Field3D indexDDZ(const Field3D &f, CELL_LOC outloc)
 F_INDEX_FIRSTDERIV(indexDDZ, defaultIndexDDZ, Field2D); // const Field2D indexDDZ(const Field2D &f, CELL_LOC outloc)
+
+}; // namespace DIFOPS
