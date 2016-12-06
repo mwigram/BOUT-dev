@@ -141,7 +141,20 @@ const Field3D Div(const Vector3D &v, CELL_LOC outloc) {
   vcn.toContravariant();
   
   result = DDX(metric->J*vcn.x, outloc);
-  result += DDY(metric->J*vcn.y, outloc);
+  
+  // Special handling of yup(), ydown() fields
+  Field3D Jvy = metric->J*vcn.y;
+  if(&vcn.y.yup() == &vcn.y) {
+    // Identity, yup and ydown point to same field
+    Jvy.mergeYupYdown();
+  }else {
+    // Distinct fields
+    Jvy.splitYupYdown();
+    Jvy.yup() = metric->J*vcn.y.yup();
+    Jvy.ydown() = metric->J*vcn.y.ydown();
+  }
+  result += DDY(Jvy, outloc);
+
   result += DDZ(metric->J*vcn.z, outloc);
   result /= metric->J;
 
