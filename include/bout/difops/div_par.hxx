@@ -4,21 +4,17 @@
 #ifndef __DIV_PAR_H__
 #define __DIV_PAR_H__
 
-/// Choice of numerical method to use
-enum class Difop {
-  DEFAULT   ///< The default method
-    ,C2     ///< Second order central difference. For Y derivatives this uses yup/ydown
-    ,C4     ///< Fourth order central difference. For Y derivatives this uses yup/ydown
-    ,C2_FA   ///< Second order central difference, Field Aligned
-    ,C4_FA   ///< Fourth order central difference, Field Aligned
-    };
+#include "difop_type.hxx"
+
+#include <field2d.hxx>
+#include <field3d.hxx>
 
 ////////////////////////////////////////////////////////////////////
 
 /// Parallel divergence
 /// This selects the function to call, based on the
 /// method specified at run-time
-const Field2D Div_par(const Field2D &f, Difop method = Difop::DEFAULT);
+const Field2D Div_par(const Field2D &f, Difop method = Difop::C2);
 
 /// Parallel divergence
 /// 2nd order central differencing
@@ -32,7 +28,10 @@ const Field2D Div_par_C4(const Field2D &f);
 
 ////////////////////////////////////////////////////////////////////
 
-const Field3D Div_par(const Field3D &f, Difop method = Difop::DEFAULT);
+/// Parallel divergence
+/// This selects the function to call, based on the
+/// cell location, and the method specified at run-time
+const Field3D Div_par(const Field3D &f, Difop method = Difop::C2);
 
 /// Parallel divergence
 /// 2nd order central differencing

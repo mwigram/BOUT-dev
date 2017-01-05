@@ -9,8 +9,10 @@ const Field2D Div_par(const Field2D &f, Difop method) {
   
   switch(method) {
   case Difop::DEFAULT:
-  case Difop::C2: return Div_par_C2(f); // Second order central difference
-  case Difop::C4: return Div_par_C4(f); // Fourth order central difference
+  case Difop::C2: // No difference between this and FA, since no yup/down fields
+  case Difop::C2_FA: return Div_par_C2(f); // Second order central difference
+  case Difop::C4:
+  case Difop::C4_FA: return Div_par_C4(f); // Fourth order central difference
   }
   
   throw BoutException("Method not supported");
@@ -55,16 +57,12 @@ const Field2D Div_par_C4(const Field2D &f) {
 // Field3D objects
 // Need to account for different cell locations, and yup/ydown 
 
-/// Parallel divergence
-/// This selects the function to call, based on the
-/// cell location, and the method specified at run-time
 const Field3D Div_par(const Field3D &f, Difop method) {
   
   switch(f.getLocation()) {
   case CELL_CENTRE: {
     // Cell centre -> Cell centre
     switch(method) {
-    case Difop::DEFAULT:
     case Difop::C2:    return Div_par_C2(f);
     case Difop::C2_FA: return Div_par_C2_FA(f);
     case Difop::C4_FA: return Div_par_C4_FA(f);
@@ -75,7 +73,6 @@ const Field3D Div_par(const Field3D &f, Difop method) {
   case CELL_YLOW: {
     // Cell ylow -> Cell centre
     switch(method) {
-    case Difop::DEFAULT:
     case Difop::C2: return Div_par_LtoC_C2(f);
     case Difop::C2_FA: return Div_par_LtoC_C2_FA(f);
     }
