@@ -99,7 +99,7 @@ const Field3D Div_par_C2(const Field3D &f) {
   for(auto i : f.region(RGN_NOBNDRY)) {
     auto yp = i.yp();
     auto ym = i.ym();
-    result[i] = coord->Bxy[i]*( (fyup[yp]/coord->Bxy[yp]) - (fydown[ym]/coord->Bxy[ym]) ) / (0.5*(coord->dy[yp]*sqrt(coord->g_22[yp]) + coord->dy[ym]*sqrt(coord->g_22[ym])) + coord->dy[i]*sqrt(coord->g_22[i]));
+    result[i] = coord->Bxy[i]*( (fyup[yp]/coord->Bxy[yp]) - (fydown[ym]/coord->Bxy[ym]) ) / (2.*coord->dy[i]*sqrt(coord->g_22[i]));
   }
   return result;
 }

@@ -170,6 +170,7 @@ int physics_init(bool restarting) {
 
   /************** SHIFTED GRIDS LOCATION ***************/
 
+  /*
   // Velocities defined on cell boundaries
   Vi.setLocation(CELL_YLOW);
   Ajpar.setLocation(CELL_YLOW);
@@ -177,7 +178,8 @@ int physics_init(bool restarting) {
   // Apar and jpar too
   Apar.setLocation(CELL_YLOW); 
   jpar.setLocation(CELL_YLOW);
-
+  */
+  
   /************** NORMALISE QUANTITIES *****************/
 
   output.write("\tNormalising to rho_s = %e\n", rho_s);
@@ -341,7 +343,8 @@ int physics_run(BoutReal t) {
   
   if(ZeroElMass) {
     // Set jpar,Ve,Ajpar neglecting the electron inertia term
-    jpar = ((Te0*Grad_par(Ni, CELL_YLOW)) - (Ni0*Grad_par(phi, CELL_YLOW)))/(fmei*0.51*nu);
+    //jpar = ((Te0*Grad_par(Ni, CELL_YLOW)) - (Ni0*Grad_par(phi, CELL_YLOW)))/(fmei*0.51*nu);
+    jpar = ((Te0*Grad_par(Ni)) - (Ni0*Grad_par(phi)))/(fmei*0.51*nu);
     
     // Set boundary conditions on jpar (in BOUT.inp)
     jpar.applyBoundary();
@@ -400,7 +403,7 @@ int physics_run(BoutReal t) {
   ddt(rho) = 0.0;
   if(evolve_rho) {
 
-    ddt(rho) += SQ(coord->Bxy)*Div_par(jpar, CELL_CENTRE);
+    ddt(rho) += SQ(coord->Bxy)*Div_par_C2(jpar);
   }
   
 
