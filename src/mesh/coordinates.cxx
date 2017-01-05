@@ -612,39 +612,6 @@ const Field3D Coordinates::Vpar_Grad_par(const Field &v, const Field &f, CELL_LO
 }
 
 /////////////////////////////////////////////////////////
-// Parallel divergence
-
-const Field2D Coordinates::Div_par(const Field2D &f, CELL_LOC UNUSED(outloc), DIFF_METHOD UNUSED(method)) {
-  msg_stack.push("Coordinates::Div_par( Field2D )");
-   
-  Field2D result = Bxy*Grad_par(f/Bxy);
-  
-  msg_stack.pop();
-  
-  return result;
-}
-
-const Field3D Coordinates::Div_par(const Field3D &f, CELL_LOC outloc, DIFF_METHOD method) {
-  msg_stack.push("Coordinates::Div_par( Field3D )");
-  
-  // Need to modify yup and ydown fields
-  Field3D f_B = f/Bxy;
-  if(&f.yup() == &f) {
-    // Identity, yup and ydown point to same field
-    f_B.mergeYupYdown();
-  }else {
-    // Distinct fields
-    f_B.splitYupYdown();
-    f_B.yup() = f.yup() / Bxy;
-    f_B.ydown() = f.ydown() / Bxy;
-  }
-  Field3D result = Bxy*Grad_par(f_B, outloc, method);
-  
-  msg_stack.pop();
-  return result;
-}
-
-/////////////////////////////////////////////////////////
 // second parallel derivative (b dot Grad)(b dot Grad)
 // Note: For parallel Laplacian use Laplace_par
 

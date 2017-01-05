@@ -108,10 +108,6 @@ public:
   const Field2D Vpar_Grad_par(const Field2D &v, const Field2D &f, CELL_LOC outloc=CELL_DEFAULT, DIFF_METHOD method=DIFF_DEFAULT);
   const Field3D Vpar_Grad_par(const Field &v, const Field &f, CELL_LOC outloc=CELL_DEFAULT, DIFF_METHOD method=DIFF_DEFAULT);
   
-  /// Divergence along magnetic field  Div(b*f) = B.Grad(f/B)
-  const Field2D Div_par(const Field2D &f, CELL_LOC outloc=CELL_DEFAULT, DIFF_METHOD method=DIFF_DEFAULT);
-  const Field3D Div_par(const Field3D &f, CELL_LOC outloc=CELL_DEFAULT, DIFF_METHOD method=DIFF_DEFAULT);
-  
   // Second derivative along magnetic field
   const Field2D Grad2_par2(const Field2D &f);
   const Field3D Grad2_par2(const Field3D &f, CELL_LOC outloc);

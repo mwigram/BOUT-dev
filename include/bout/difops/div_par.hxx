@@ -11,7 +11,15 @@
 
 ////////////////////////////////////////////////////////////////////
 
-/// Parallel divergence
+/// Parallel divergence operator
+/// 
+/// \f[
+///  B \partial_{||}(f/B) = B \nabla\cdot (\mathbf{b}f/B )
+/// \f]
+/// 
+/// @param[in] f  The component of a vector along the magnetic field 
+/// @param[in] method  The numerical method to use
+///
 /// This selects the function to call, based on the
 /// method specified at run-time
 const Field2D Div_par(const Field2D &f, Difop method = Difop::C2);
@@ -28,7 +36,15 @@ const Field2D Div_par_C4(const Field2D &f);
 
 ////////////////////////////////////////////////////////////////////
 
-/// Parallel divergence
+/// Parallel divergence operator
+/// 
+/// \f[
+///  B \partial_{||}(f/B) = B \nabla\cdot (\mathbf{b}f/B )
+/// \f]
+/// 
+/// @param[in] f  The component of a vector along the magnetic field 
+/// @param[in] method  The numerical method to use
+///
 /// This selects the function to call, based on the
 /// cell location, and the method specified at run-time
 const Field3D Div_par(const Field3D &f, Difop method = Difop::C2);

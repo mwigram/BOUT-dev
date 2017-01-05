@@ -1,5 +1,9 @@
-#include "div_par.hxx"
 
+#include <globals.hxx>
+
+#include <bout/difops/div_par.hxx>
+#include <msg_stack.hxx>
+#include <boutexception.hxx>
 
 ////////////////////////////////////////////////////////////////////
 // Field2D objects
@@ -8,7 +12,6 @@ const Field2D Div_par(const Field2D &f, Difop method) {
   TRACE("Div_par(Field2D)");
   
   switch(method) {
-  case Difop::DEFAULT:
   case Difop::C2: // No difference between this and FA, since no yup/down fields
   case Difop::C2_FA: return Div_par_C2(f); // Second order central difference
   case Difop::C4:
@@ -29,7 +32,7 @@ const Field2D Div_par_C2(const Field2D &f) {
   for(auto i : f.region(RGN_NOBNDRY)) {
     auto yp = i.yp();
     auto ym = i.ym();
-    result[i] = coord->Bxy[i]*( (f[yp]/coord->Bxy[yp]) - (f[ym]/coord->Bxy[ym]) ) / (0.5*(coord->dy[yp]*sqrt(mesh->g_22[yp]) + coord->dy[ym]*sqrt(mesh->g_22[ym])) + coord->dy[i]*sqrt(mesh->g_22[i]));
+    result[i] = coord->Bxy[i]*( (f[yp]/coord->Bxy[yp]) - (f[ym]/coord->Bxy[ym]) ) / (0.5*(coord->dy[yp]*sqrt(coord->g_22[yp]) + coord->dy[ym]*sqrt(coord->g_22[ym])) + coord->dy[i]*sqrt(coord->g_22[i]));
   }
   return result;
 }
@@ -48,7 +51,7 @@ const Field2D Div_par_C4(const Field2D &f) {
     auto ypp = i.offset(0,2,0);
     auto ymm = i.offset(0,-2,0);
     
-    result[i] = coord->Bxy[i]*( (8.*f[yp]/coord->Bxy[yp]) - (8.*f[ym]/coord->Bxy[ym]) + (f[ymm]/coord->Bxy[ymm]) - (f[ypp]/coord->Bxy[ypp]) ) / (6.*(0.5*(coord->dy[yp]*sqrt(mesh->g_22[yp]) + coord->dy[ym]*sqrt(mesh->g_22[ym])) + coord->dy[i]*sqrt(mesh->g_22[i])));
+    result[i] = coord->Bxy[i]*( (8.*f[yp]/coord->Bxy[yp]) - (8.*f[ym]/coord->Bxy[ym]) + (f[ymm]/coord->Bxy[ymm]) - (f[ypp]/coord->Bxy[ypp]) ) / (6.*(0.5*(coord->dy[yp]*sqrt(coord->g_22[yp]) + coord->dy[ym]*sqrt(coord->g_22[ym])) + coord->dy[i]*sqrt(coord->g_22[i])));
   }
   return result;
 }
@@ -66,7 +69,6 @@ const Field3D Div_par(const Field3D &f, Difop method) {
     case Difop::C2:    return Div_par_C2(f);
     case Difop::C2_FA: return Div_par_C2_FA(f);
     case Difop::C4_FA: return Div_par_C4_FA(f);
-    }
     }
     break;
   }
@@ -97,7 +99,7 @@ const Field3D Div_par_C2(const Field3D &f) {
   for(auto i : f.region(RGN_NOBNDRY)) {
     auto yp = i.yp();
     auto ym = i.ym();
-    result[i] = coord->Bxy[i]*( (fyup[yp]/coord->Bxy[yp]) - (fydown[ym]/coord->Bxy[ym]) ) / (0.5*(coord->dy[yp]*sqrt(mesh->g_22[yp]) + coord->dy[ym]*sqrt(mesh->g_22[ym])) + coord->dy[i]*sqrt(mesh->g_22[i]));
+    result[i] = coord->Bxy[i]*( (fyup[yp]/coord->Bxy[yp]) - (fydown[ym]/coord->Bxy[ym]) ) / (0.5*(coord->dy[yp]*sqrt(coord->g_22[yp]) + coord->dy[ym]*sqrt(coord->g_22[ym])) + coord->dy[i]*sqrt(coord->g_22[i]));
   }
   return result;
 }
@@ -170,7 +172,7 @@ const Field3D Div_par_C2_FA(const Field3D &f) {
   for(auto i : f.region(RGN_NOBNDRY)) {
     auto yp = i.yp();
     auto ym = i.ym();
-    result[i] = coord->Bxy[i]*( (fa[yp]/coord->Bxy[yp]) - (fa[ym]/coord->Bxy[ym]) ) / (0.5*(coord->dy[yp]*sqrt(mesh->g_22[yp]) + coord->dy[ym]*sqrt(mesh->g_22[ym])) + coord->dy[i]*sqrt(mesh->g_22[i]));
+    result[i] = coord->Bxy[i]*( (fa[yp]/coord->Bxy[yp]) - (fa[ym]/coord->Bxy[ym]) ) / (0.5*(coord->dy[yp]*sqrt(coord->g_22[yp]) + coord->dy[ym]*sqrt(coord->g_22[ym])) + coord->dy[i]*sqrt(coord->g_22[i]));
   }
   
   // Transform result back to shifted coordinates
@@ -192,7 +194,7 @@ const Field3D Div_par_C4_FA(const Field3D &f) {
     auto ypp = i.offset(0,2,0);
     auto ymm = i.offset(0,-2,0);
     
-    result[i] = coord->Bxy[i]*( (8.*fa[yp]/coord->Bxy[yp]) - (8.*fa[ym]/coord->Bxy[ym]) + (fa[ymm]/coord->Bxy[ymm]) - (fa[ypp]/coord->Bxy[ypp]) ) / (6.*(0.5*(coord->dy[yp]*sqrt(mesh->g_22[yp]) + coord->dy[ym]*sqrt(mesh->g_22[ym])) + coord->dy[i]*sqrt(mesh->g_22[i])));
+    result[i] = coord->Bxy[i]*( (8.*fa[yp]/coord->Bxy[yp]) - (8.*fa[ym]/coord->Bxy[ym]) + (fa[ymm]/coord->Bxy[ymm]) - (fa[ypp]/coord->Bxy[ypp]) ) / (6.*(0.5*(coord->dy[yp]*sqrt(coord->g_22[yp]) + coord->dy[ym]*sqrt(coord->g_22[ym])) + coord->dy[i]*sqrt(coord->g_22[i])));
   }
   
   // Transform result back to shifted coordinates

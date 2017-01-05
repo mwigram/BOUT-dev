@@ -177,18 +177,6 @@ const Field3D Vpar_Grad_par(const Field &v, const Field &f, DIFF_METHOD method, 
 * parallel divergence operator B \partial_{||} (F/B)
 *******************************************************************************/
 
-const Field2D Div_par(const Field2D &f) {
-  return mesh->coordinates()->Div_par(f);
-}
-
-const Field3D Div_par(const Field3D &f, CELL_LOC outloc, DIFF_METHOD method) {
-  return mesh->coordinates()->Div_par(f, outloc, method);
-}
-
-const Field3D Div_par(const Field3D &f, DIFF_METHOD method, CELL_LOC outloc) {
-  return mesh->coordinates()->Div_par(f, outloc, method);
-}
-
 const Field3D Div_par(const Field3D &f, const Field3D &v) {
   // Parallel divergence, using velocities at cell boundaries
   // Note: Not guaranteed to be flux conservative

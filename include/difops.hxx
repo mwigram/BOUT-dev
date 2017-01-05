@@ -112,47 +112,8 @@ const Field3D Vpar_Grad_par(const Field &v, const Field &f,
  */
 const Field3D Vpar_Grad_par(const Field &v, const Field &f, DIFF_METHOD method, CELL_LOC outloc=CELL_DEFAULT);
 
-
-/*!
- * parallel divergence operator
- * 
- * \f[
- *  B \partial_{||}(f/B) = B \nabla\cdot (\mathbf{b}f/B )
- * \f]
- * 
- * @param[in] f  The component of a vector along the magnetic field 
- * 
- */
-const Field2D Div_par(const Field2D &f);
-
-/*!
- * parallel divergence operator
- * 
- * \f[
- *  B \partial_{||}(f/B) = B \nabla\cdot (\mathbf{b}f/B )
- * \f]
- * 
- * @param[in] f  The component of a vector along the magnetic field 
- * @param[in] outloc  The cell location for the result. By default the same as \p f
- * @param[in] method  The numerical method to use
- * 
- */
-const Field3D Div_par(const Field3D &f, 
-		      CELL_LOC outloc=CELL_DEFAULT, DIFF_METHOD method=DIFF_DEFAULT);
-
-/*!
- * parallel divergence operator
- * 
- * \f[
- *  B \partial_{||}(f/B) = B \nabla\cdot (\mathbf{b}f/B )
- * \f]
- * 
- * @param[in] f  The component of a vector along the magnetic field 
- * @param[in] outloc  The cell location for the result. By default the same as \p f
- * @param[in] method  The numerical method to use
- * 
- */
-const Field3D Div_par(const Field3D &f, DIFF_METHOD method, CELL_LOC outloc = CELL_DEFAULT);
+// Include the Div_par operator
+#include "bout/difops/div_par.hxx"
 
 // Flux methods. Model divergence of flux: df/dt =  Div(v * f)
 const Field3D Div_par_flux(const Field3D &v, const Field3D &f, 

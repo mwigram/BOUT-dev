@@ -5,7 +5,7 @@
 
 /// Choice of numerical method to use
 enum class Difop {
-    ,U1     ///< First order upwinding
+  U1     ///< First order upwinding
     ,U2     ///< Second order upwinding
     ,C2     ///< Second order central difference. For Y derivatives this uses yup/ydown
     ,C4     ///< Fourth order central difference. For Y derivatives this uses yup/ydown
