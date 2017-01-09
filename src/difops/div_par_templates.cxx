@@ -87,19 +87,11 @@ private:
 //   BoutReal eval(const DataIterator &i) const
 //
 
-/*
-template<class F, class VS, class Op>
-struct OpSingleArg {
-  
-  
-  BoutReal eval(const DataIterator &i) {
-    
-  }
-};
-*/
-
-/// 
-template<class F, class IS, template<typename,typename> class VS > // 
+/// Div_par operator, second order central difference
+///
+/// @tparam F    Field type (Field2D, Field3D). Unfortunately this can't be inferred from constructor
+/// @tparam VS   Value Stencil. Calculates values from a set of indices.
+template<class F, template<typename,typename> class VS> 
 class OpDivParC2 {
 public:
   /// Initialise with a Field3D or Field2D
@@ -109,8 +101,8 @@ public:
   
   /// Evaluate at point i
   inline BoutReal eval(const DataIterator &i) const {
-    // Calculate the index stencil (IS)
-    IS is(i);
+    // Calculate the index stencil (IS) in the Y direction
+    IndexStencilY is(i);
     // Get the stencil of values from field f
     Stencil1D s = vs.eval(is); 
     // Calculate the divergence operator
@@ -118,23 +110,31 @@ public:
   }
 private:
   Coordinates *coord;
-  VS<F,IS> vs; // Value Stencil
+  VS<F,IndexStencilY> vs; // Value Stencil
 };
 
 
 const Field2D Div_par_C2_TEST(const Field2D &f) {
-  OpDivParC2<Field2D, IndexStencilY, ValueStencil> op(f); // Operator
-  return evalOperator<Field2D, OpDivParC2<Field2D, IndexStencilY, ValueStencil> >(op, RGN_NOBNDRY);
+  // Create the operator
+  OpDivParC2<Field2D,       // Operating on an input Field2D
+             ValueStencil   // Simple calculation of stencil values (no yup/ydown) 
+             > op(f);
+  // Evaluate operator over a Field2D region
+  return evalOperator<Field2D>(op, RGN_NOBNDRY);
 }
 
 const Field3D Div_par_C2_TEST(const Field3D &f) {
-  OpDivParC2<Field3D, IndexStencilY, ValueStencilYud> op(f); // Operator, using yup and ydown
-  return evalOperator<Field3D, OpDivParC2<Field3D, IndexStencilY, ValueStencilYud> >(op, RGN_NOBNDRY);
+  OpDivParC2<Field3D,       // Operates on Field3D input
+             ValueStencilYud  // Use Yup and Ydown to get values from stencils
+             > op(f);
+  return evalOperator<Field3D>(op, RGN_NOBNDRY);
 }
 
 const Field3D Div_par_C2_FA_TEST(const Field3D &f) {
-  Field3D fa = mesh->toFieldAligned(f);
-  OpDivParC2<Field3D, IndexStencilY, ValueStencil> op(fa);
-  Field3D result = evalOperator<Field3D, OpDivParC2<Field3D, IndexStencilY, ValueStencil> >(op, RGN_NOBNDRY);
-  return mesh->fromFieldAligned(result);
+  Field3D fa = mesh->toFieldAligned(f); // Transform to field aligned coordinates
+  OpDivParC2<Field3D,      // Operate on Field3D input
+             ValueStencil  // No yup/ydown fields
+             > op(fa);
+  Field3D result = evalOperator<Field3D>(op, RGN_NOBNDRY);
+  return mesh->fromFieldAligned(result); // Transform back
 }
