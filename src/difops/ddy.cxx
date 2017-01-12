@@ -56,16 +56,19 @@ const Field2D DDY_C4(const Field2D &f) {
 ////////////////////////////////////////////////////////////////////
 // Field3D operators
 
-const Field3D DDY(const Field3D &f, Difop method) {
-  switch(f.getLocation()) {
-  case CELL_CENTRE: {
-    // Cell centre -> Cell centre
+const Field3D DDY(const Field3D &f, CELL_LOC outloc, Difop method) {
+  
+  if(outloc == CELL_DEFAULT) {
+    // Output is at the same location as input
+    
     switch(method) {
     case Difop::C2:    return DDY_C2(f);
     case Difop::C2_FA: return DDY_C2_FA(f);
     }
-    break;
   }
+  
+  switch(f.getLocation()) {
+    
   case CELL_YLOW: {
     // Cell ylow -> Cell centre
     
@@ -75,46 +78,37 @@ const Field3D DDY(const Field3D &f, Difop method) {
   throw BoutException("Method not supported");
 }
 
-const Field3D DDY_C2(const Field3D &f) {
-  TRACE("DDY_C2(Field3D)");
-  
-  ASSERT1(f.getLocation() == CELL_CENTRE);
-
-  Field3D result;
+/// Stencil class S
+/// 
+template<class F, class S, class SD, class Op>
+const F applyDeriv(const F &f, const SD &spacing, REGION region) {
+  F result;
   result.allocate();
-  result.setLocation(CELL_CENTRE);
   
-  Field3D& fup = f.yup();
-  Field3D& fdown = f.ydown();
-  
-  Coordinates *coord = mesh->coordinates();
+  S stencil(f); // Create a stencil
 
-  for(auto i : f.region(RGN_NOBNDRY)) {
-    result[i] = (fup[i.yp()] - fdown[i.ym()]) / (2.*coord->dy[i]);
+  for(auto i : result.region(RGN_NOBNDRY)) {
+    // Update the stencil values (c,p,m)
+    stencil.update(i);
+    // Update the cell spacing values
+    spacing.update(i);
+    // Perform operation
+    result[i] = Op::op(stencil, spacing);
   }
-  return result;
+  
+  // Final transformation e.g. from Field Aligned
+  return stencil.final(result);
+}
+
+const Field3D DDY_C2(const Field3D &f) {
+  StencilY2D dy(mesh->coordinates()->dy); // Mesh spacing
+  return applyDeriv<Field3D, StencilY3D, StencilY2D, Op_DDX_C2>(f, dy);
 }
 
 const Field3D DDY_C2_FA(const Field3D &f) {
-  TRACE("DDY_C2_FA(Field3D)");
-  
-  ASSERT1(f.getLocation() == CELL_CENTRE);
-
-  Field3D result;
-  result.allocate();
-  result.setLocation(CELL_CENTRE);
-  
-  // Transform to field aligned coordinates
-  Field3D fa = mesh->toFieldAligned(f);
-  
-  Coordinates *coord = mesh->coordinates();
-
-  for(auto i : f.region(RGN_NOBNDRY)) {
-    result[i] = (fa[i.yp()] - fa[i.ym()]) / (2.*coord->dy[i]);
-  }
-  // Transform back from field aligned coordinates
-  return mesh->fromFieldAligned(result);
+  return applyDeriv<Field3D, StencilY3D_FA, Op_DDX_C2>(f);
 }
+
 
 
 #endif //  __DDY_H__

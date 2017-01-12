@@ -107,6 +107,7 @@ int main(int argc, char **argv) {
   SteadyClock start1 = steady_clock::now();
   int len = mesh->LocalNx*mesh->LocalNy*mesh->LocalNz;
   for(int i=0;i<10;++i) {
+#pragma GCC ivdep
     for(int j=0;j<len;++j) {
       rd[j] = ad[j] + bd[j];
     }
@@ -165,7 +166,8 @@ int main(int argc, char **argv) {
   // Range based DataIterator 
   SteadyClock start9 = steady_clock::now();
   for (int x=0;x<10;++x) {
-    for (auto i : result) {
+#pragma GCC ivdep
+    for (const auto& i : result) {
       result[i] = a[i] + b[i];
     }
   }

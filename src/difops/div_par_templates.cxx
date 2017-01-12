@@ -9,7 +9,7 @@
 /// @param op      Instance of Op
 /// @param region  The region to iterate over
 template<class F, class Op> 
-const F evalOperator(const Op &op, REGION region) {
+inline const F evalOperator(const Op &op, REGION region) {
   F result;
   result.allocate();
   
@@ -86,6 +86,47 @@ private:
 //
 //   BoutReal eval(const DataIterator &i) const
 //
+
+
+struct derivC2 {
+  inline BoutReal eval(Stencil1D s) const {
+    return (s.p - s.m)/2.;
+  }
+};
+
+
+template<class F, typename Op, class IS, template<typename,typename> class VS = ValueStencil>
+class OperatorYderiv {
+public:
+  /// Initialise with a Field3D or Field2D
+  OperatorYderiv(const F &f) : vs(f) {
+    coord = mesh->coordinates();
+  }
+  
+  /// Evaluate at point i
+  inline BoutReal eval(const DataIterator &i) const {
+    IS is(i); // Get the index stencil
+    return op.eval(vs.eval(is)) / coord->dy[i];
+  }
+private:
+  Coordinates *coord;
+  VS<F,IS> vs; // Value Stencil
+  Op op; // Operator
+};
+
+const Field3D DDY_C2_TEST(const Field3D &f) {
+  OperatorYderiv<Field3D, // Input is a Field3D
+                 derivC2, // First derivative, central second order
+                 IndexStencilY // Stencil in Y direction
+                 > op(f);
+  
+  // Evaluate operator over a Field3D region
+  return evalOperator<Field3D>(op, RGN_NOBNDRY);
+}
+
+
+/////////////////////////////////////////////////////////////////////////
+
 
 /// Div_par operator, second order central difference
 ///
